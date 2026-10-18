@@ -10,7 +10,7 @@
   "portsAttributes": {
     "5173": {
       "label": "Duckazon e2e",
-      "onAutoForward": "openBrowser"
+      "onAutoForward": "notify"
     },
     "6080": {
       "label": "Browser-Desktop (noVNC)",

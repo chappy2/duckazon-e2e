@@ -35,6 +35,10 @@ Alternativ ZIP entpacken → VS Code → **File > Open Folder** → `duckazon-e2
 
 **Ports:** `5173` Vite-Shop, `6080` noVNC (nur lokal über VS Code Port Forwarding verwenden). Das Desktop-Passwort ist `vscode`; die Portfreigaben lokal halten.
 
+Beide Ports melden die Weiterleitung, ohne automatisch einen Browser zu öffnen.
+Details und den optionalen Ansatz zum automatischen Öffnen beschreibt
+[Browser und Testausführung](docs/browser-und-testausfuehrung.md).
+
 ## VS Code Extensions / Plugins
 
 Die `.devcontainer/devcontainer.json` installiert im Container automatisch:
