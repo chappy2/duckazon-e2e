@@ -1,115 +1,126 @@
 # 🦆 Duckazon – E2E Testing in a Box
 
-**15-Minuten-Roundtable:** Playwright E2E-Tests im Debian Dev Container, visuelles Debugging mit VS Code und noVNC sowie headless CI mit GitHub Actions. Ein absurder Shop für Entwickler-Enten, kein echter Checkout.
+[![E2E (headless)](https://github.com/chappy2/duckazon-e2e/actions/workflows/playwright.yml/badge.svg)](https://github.com/chappy2/duckazon-e2e/actions/workflows/playwright.yml)
 
-## Zweck und Design
+Demo-Shop für Playwright-Tests im Dev Container – mit noVNC, VS-Code-Debugging und GitHub Actions.
 
-Das Repository ist ein reproduzierbares Schulungsprojekt: ein bewusst kleines React/Vite-Frontend, Bun als Package Manager und Skript-Runner, Playwright als Test-Runner, Chromium als Browser. Der Shop demonstriert Locators, Assertions, Formulare, Test-Fehlschläge, Breakpoints und CI-Traces. Das visuelle Design verwendet eine dunkelblaue Hero-Fläche, gelbe Enten-Akzente, türkisfarbene Aktionen und responsive Produktkarten. Der Rabattcode `QUACK50` reduziert den Warenkorb regulär um 50 %. Ein **absichtlich aktivierbarer Bug** berechnet stattdessen nur 40 % Rabatt (`?bug=discount`).
+**[Präsentation öffnen →](https://chappy2.github.io/duckazon-e2e)**
 
-**Architektur:** Ein Debian-Bookworm-Container enthält Bun, Node.js und Chromium. Das Dev-Container-Feature `desktop-lite` stellt den virtuellen Desktop mit Fluxbox, TigerVNC und noVNC bereit und startet ihn automatisch. Es setzt auch `DISPLAY`, sodass headed Chromium und der Playwright Inspector auf diesem Desktop erscheinen. noVNC zeigt diesen Desktop im Host-Browser. Ein eigenes Desktop-Startskript ist nicht erforderlich. VS Code debuggt den Playwright-Testprozess im Container. Die GitHub Action nutzt ebenfalls Debian Bookworm, Bun und Chromium, aber führt die Tests headless aus. Die CI verwendet aus Gründen der Einfachheit das Debian-Node-Image und installiert Browser-Abhängigkeiten; sie baut **nicht** das DevContainer-Dockerfile. OS-Familie und Testcode stimmen überein, die Images sind nicht identisch.
+## Voraussetzungen
 
-## Voraussetzungen installieren (Windows / macOS / Linux)
+- [Git](https://git-scm.com/downloads), [VS Code](https://code.visualstudio.com/download)
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) oder unter Linux [Docker Engine](https://docs.docker.com/engine/install/), gestartet
+- VS-Code-Erweiterung **Dev Containers** (`ms-vscode-remote.remote-containers`)
 
-1. **Git** installieren: https://git-scm.com/downloads
-2. **VS Code** installieren: https://code.visualstudio.com/download
-3. **Docker Desktop** (Windows/macOS) installieren: https://www.docker.com/products/docker-desktop/ ; auf Linux Docker Engine installieren: https://docs.docker.com/engine/install/ . Docker starten. Auf Windows wird WSL 2 empfohlen: https://learn.microsoft.com/windows/wsl/install
-4. In VS Code die Erweiterung **Dev Containers** (`ms-vscode-remote.remote-containers`) installieren: Extensions (`Ctrl+Shift+X` bzw. `Cmd+Shift+X`) → `Dev Containers` suchen → Installieren.
-5. Installation im Terminal prüfen: `git --version` und `docker version`. Docker muss erreichbar sein. **Bun muss auf dem Host nicht installiert werden.**
+Bun und Chromium werden im Container installiert.
 
-## Repository öffnen
+## Im Dev Container öffnen
 
 ```bash
-git clone <URL-DEINES-REPOSITORIES>
+git clone https://github.com/chappy2/duckazon-e2e.git
 cd duckazon-e2e
 code .
 ```
 
-Alternativ ZIP entpacken → VS Code → **File > Open Folder** → `duckazon-e2e` auswählen.
+1. Befehlspalette öffnen: `Ctrl+Shift+P` / macOS `Cmd+Shift+P`.
+2. **Dev Containers: Reopen in Container** wählen.
+3. Einrichtung abwarten. Abhängigkeiten und Chromium werden automatisch installiert.
 
-1. In VS Code `Ctrl+Shift+P` (macOS `Cmd+Shift+P`) öffnen.
-2. **Dev Containers: Reopen in Container** ausführen (oder auf die VS-Code-Einblendung klicken).
-3. Den ersten Image-Build abwarten; `postCreateCommand` führt `bun install` und `bunx playwright install --with-deps chromium` aus. Dies kann mehrere Minuten dauern.
-4. Das Terminal läuft nun **im Container**. Unten links ist die Container-Verbindung erkennbar.
-5. `bun run dev` ausführen und http://localhost:5173 öffnen.
-6. http://localhost:6080/vnc.html öffnen, auf **Connect** klicken und das Passwort `vscode` eingeben (in `.devcontainer/devcontainer.json` konfiguriert). Browserfenster erscheinen, sobald ein headed Test gestartet wird.
+## Shop ohne Tests starten
 
-**Ports:** `5173` Vite-Shop, `6080` noVNC (nur lokal über VS Code Port Forwarding verwenden). Das Desktop-Passwort ist `vscode`; die Portfreigaben lokal halten.
-
-Beide Ports melden die Weiterleitung, ohne automatisch einen Browser zu öffnen.
-Details und den optionalen Ansatz zum automatischen Öffnen beschreibt
-[Browser und Testausführung](docs/browser-und-testausfuehrung.md).
-
-## Duckazon ohne Tests starten
-
-Im Terminal des Dev Containers im Repository-Verzeichnis:
+Im Container-Terminal:
 
 ```bash
 bun run dev
 ```
 
-Anschließend http://localhost:5173 im eigenen Browser öffnen und den Shop manuell bedienen. Der Befehl startet den Vite-Entwicklungsserver, ohne Tests auszuführen. noVNC ist dafür nicht erforderlich. Falls nötig, Port 5173 in der VS-Code-Ports-Ansicht weiterleiten. Mit `Ctrl+C` den Server beenden.
+[Shop öffnen](http://localhost:5173), manuell ausprobieren. Mit `Ctrl+C` beenden.
+Falls Abhängigkeiten fehlen: `bun install`.
 
-Die Abhängigkeiten installiert der Dev Container beim Einrichten automatisch. Falls sie fehlen, vorher `bun install` ausführen.
+## Testbrowser in noVNC sehen
 
-## VS Code Extensions / Plugins
+1. [noVNC öffnen](http://localhost:6080/vnc.html).
+2. **Connect** wählen, Passwort: `vscode`.
+3. `bun run test:headed` starten. Chromium erscheint auf dem Container-Desktop.
 
-Die `.devcontainer/devcontainer.json` installiert im Container automatisch:
+| Port | Inhalt        |
+| ---- | ------------- |
+| 5173 | Shop          |
+| 6080 | noVNC-Desktop |
 
-| Extension                         | Zweck                                    |
-| --------------------------------- | ---------------------------------------- |
-| `ms-playwright.playwright`        | Tests ausführen, navigieren und debuggen |
-| `esbenp.prettier-vscode`          | Autoformatierung beim Speichern          |
-| `dbaeumer.vscode-eslint`          | Linting und Fixes                        |
-| `openai.chatgpt`                  | Codex-Unterstützung                      |
-| `ReneSaarsoo.sql-formatter-vsc`   | SQL-Formatierung                         |
-| `lumirelle.shell-format-rev`      | Shell-/Dockerfile-Formatierung mit shfmt |
-| `bradlc.vscode-tailwindcss`       | Tailwind-CSS-Unterstützung               |
-| `ms-azuretools.vscode-containers` | Container-Werkzeuge                      |
+Die Ports werden über VS Code weitergeleitet; bei Bedarf in der **Ports**-Ansicht öffnen. Freigaben lokal halten.
 
-**Wichtig:** Die lokale Dev-Containers-Erweiterung muss _vor_ dem Öffnen installiert sein; die anderen werden automatisch im Container installiert. Prettier ist der Standard-Formatter, `editor.formatOnSave=true` ist konfiguriert; SQL und Shell-/Dockerfile-Dateien verwenden die jeweils angegebenen Formatter. Zusätzlich: `bun run format`, `bun run format:check`, `bun run lint`, `bun run typecheck`.
-
-## Tests und Debugging
+## Tests ausführen
 
 ```bash
-bun run test:e2e         # reguläre Tests headless, Bug-Demo ausgeschlossen
-bun run test:headed      # reguläre Tests sichtbar in noVNC
-bun run test:debug       # Playwright Inspector auf dem desktop-lite-Desktop
-DEMO_BUG=1 bun run test:headed tests/03-debugging.spec.ts  # absichtlich rot
+bun run test:e2e         # headless
+bun run test:headed      # sichtbar in noVNC
+bun run test:debug       # Playwright Inspector
 bunx playwright show-report
 ```
 
-**VS Code Breakpoints:** noVNC unter http://localhost:6080/vnc.html öffnen. Für die absichtlich fehlschlagende Demo muss `DEMO_BUG=1` beim Start des Testprozesses gesetzt sein, da die Datei sonst ausgeschlossen wird. Im Container-Terminal:
+Playwright startet den Shop bei Bedarf selbst.
+
+## Rabatt-Bug debuggen
+
+`QUACK50` soll 29,99 € auf **15,00 €** reduzieren. Die Demo mit `?bug=discount` liefert absichtlich **17,99 €**.
+
+### Mit VS-Code-Breakpoint
+
+1. noVNC verbinden.
+2. In den Playwright-Einstellungen der **Testing**-Ansicht `DEMO_BUG=1` setzen und Tests aktualisieren.
+3. In `tests/03-debugging.spec.ts` bei `const total = …` einen Breakpoint setzen.
+4. **Debug Test** wählen, mit `F10` weitergehen und `total` prüfen.
+5. In `src/App.tsx` bei `bug ? 0.6 : 0.5` den Faktor `0.6` auf `0.5` ändern und erneut testen.
+
+Danach Demo-Bug wiederherstellen und `DEMO_BUG` entfernen. Der Debugger hält den Testprozess an; die Webseite kann weiterlaufen.
+
+### Mit Playwright Inspector
 
 ```bash
 DEMO_BUG=1 bunx playwright test tests/03-debugging.spec.ts --headed --workers=1 --debug
 ```
 
-Das öffnet den **Playwright Inspector**; dort schrittweise durch den Test gehen und den Browser in noVNC beobachten.
+`--debug` öffnet den Inspector. Für VS-Code-Breakpoints **Debug Test** verwenden.
 
-Für **VS-Code-Breakpoints** in der Testdatei stattdessen die Playwright-Erweiterung verwenden: Im Bereich **Testing** unter den Playwright-Einstellungen die Umgebungsvariable `DEMO_BUG` auf `1` setzen, die Tests aktualisieren und beim Demo-Test **Debug Test** wählen. Einen Breakpoint bei `const total = ...` in `tests/03-debugging.spec.ts` setzen. Nach Ausführen der Zeile `total` im Debugger prüfen; mit F10 schrittweise weiterlaufen. VS Code pausiert den Testprozess, die Browserseite selbst kann weiter animieren. Die fehlerhafte Berechnung befindet sich in `src/App.tsx` bei `bug ? 0.6 : 0.5`. Für den Fix `0.6` auf `0.5` ändern; Vite aktualisiert die App. Dann den Test erneut starten. Anschließend die Umgebungsvariable für reguläre Testläufe wieder entfernen.
+## Aufbau
 
-**Wichtig:** Playwright Inspector (`--debug`) und VS-Code-Breakpoints sind zwei unterschiedliche Debugging-Mechanismen. Ein eigenes F5-Startprofil ist im Repository nicht enthalten.
+- **App:** React + Vite, Bun als Paketmanager und Skript-Runner.
+- **Container:** Debian Bookworm, Node.js, Bun und Chromium.
+- **Desktop:** `desktop-lite` mit Fluxbox, TigerVNC und noVNC; Start automatisch.
+- **CI:** headless Playwright in `node:22-bookworm`, ohne Desktop. Eigenes Image, derselbe Testcode.
 
-## CI: GitHub Actions
+## Werkzeuge und Prüfungen
 
-Workflow: `.github/workflows/playwright.yml`. Auf Push, Pull Request und manuell. Führt `bun install`, Browserinstallation, Format-, Lint-, Typprüfungen und headless E2E-Tests aus. Bei Fehlern werden HTML-Report und Traces als Artefakte hochgeladen. **Empfohlen: Lockdatei für reproduzierbare Builds erzeugen und committen:**
+Der Container installiert Playwright, Prettier, ESLint, Codex sowie Erweiterungen für SQL, Shell, Tailwind und Container. Konfiguration: [devcontainer.json](.devcontainer/devcontainer.json).
 
 ```bash
-bun install
-git add bun.lock
-git commit -m "Add Bun lockfile"
+bun run format          # formatieren
+bun run format:check    # Format prüfen
+bun run lint
+bun run typecheck
 ```
 
-Die absichtlich fehlschlagende Datei `03-debugging.spec.ts` ist im Normalbetrieb ausgeschlossen. Mit `DEMO_BUG=1` wird sie aktiviert.
+## GitHub Actions
+
+[Workflow](.github/workflows/playwright.yml): läuft bei Push, Pull Request und manuell.
+
+- Installiert Abhängigkeiten und Chromium.
+- Prüft Format, Linting und Typen; führt E2E-Tests aus.
+- Speichert Reports und Testergebnisse sieben Tage; Traces und Screenshots bei Testfehlern.
+- Überspringt den absichtlichen Bug-Test ohne `DEMO_BUG=1`.
 
 ## Fehlerbehebung
 
-- **Docker nicht erreichbar:** Docker Desktop starten bzw. Linux-Docker-Daemon und Berechtigungen prüfen.
-- **noVNC ohne Browserfenster:** Erst `bun run test:headed` im Container starten. Mit `echo $DISPLAY` prüfen, ob das Feature eine Anzeige gesetzt hat; keinen festen Wert wie `:99` überschreiben. Fehlt die Anzeige oder startet der Desktop nicht, **Dev Containers: Rebuild Container** ausführen und ein neues Container-Terminal öffnen.
-- **Browser fehlt:** `bunx playwright install chromium` im Container ausführen.
-- **Port nicht erreichbar:** VS Code → Ports → `5173` / `6080` weiterleiten.
-- **Breakpoint wird nicht getroffen:** In der Playwright-Erweiterung **Debug Test** verwenden; Breakpoint in der `*.spec.ts` setzen. Für den Demo-Test muss dort `DEMO_BUG=1` gesetzt sein.
-- **Formatcheck in CI rot:** `bun run format` ausführen und Änderungen committen.
+| Problem                    | Lösung                                                                 |
+| -------------------------- | ---------------------------------------------------------------------- |
+| Docker nicht erreichbar    | Docker starten.                                                        |
+| noVNC ohne Browser         | `bun run test:headed` starten.                                         |
+| Desktop fehlt              | `echo $DISPLAY` prüfen; Container neu bauen und neues Terminal öffnen. |
+| Chromium fehlt             | `bunx playwright install chromium`                                     |
+| Port nicht erreichbar      | VS Code → **Ports** → 5173 bzw. 6080 weiterleiten.                     |
+| Breakpoint greift nicht    | **Debug Test** verwenden, `DEMO_BUG=1` setzen.                         |
+| Formatprüfung schlägt fehl | `bun run format`                                                       |
 
 ## Quellen
 
@@ -117,6 +128,5 @@ Dieses Projekt und die Präsentation habe ich mit Unterstützung von ChatGPT (Co
 
 - [VS Code Dev Containers](https://code.visualstudio.com/docs/devcontainers/tutorial)
 - [Dev Containers desktop-lite](https://github.com/devcontainers/features/tree/main/src/desktop-lite)
-- [Playwright Docker](https://playwright.dev/docs/docker)
-- [Playwright CI](https://playwright.dev/docs/ci)
+- [Playwright Docker](https://playwright.dev/docs/docker) · [Playwright CI](https://playwright.dev/docs/ci)
 - [Bun](https://bun.sh/docs)

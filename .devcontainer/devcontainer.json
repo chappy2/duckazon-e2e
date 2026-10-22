@@ -3,10 +3,7 @@
   "build": {
     "dockerfile": "Dockerfile"
   },
-  "forwardPorts": [
-    5173,
-    6080
-  ],
+  "forwardPorts": [5173, 6080],
   "portsAttributes": {
     "5173": {
       "label": "Duckazon e2e",
@@ -48,10 +45,7 @@
           "editor.formatOnSave": true
         },
         "shellformat.path": "/usr/bin/shfmt",
-        "shellformat.effectLanguages": [
-          "shellscript",
-          "dockerfile"
-        ],
+        "shellformat.effectLanguages": ["shellscript", "dockerfile"],
         "typescript.tsdk": "node_modules/typescript/lib"
       }
     }
@@ -63,7 +57,5 @@
       "password": "vscode"
     }
   },
-  "runArgs": [
-    "--shm-size=1g"
-  ]
+  "runArgs": ["--shm-size=1g"]
 }
