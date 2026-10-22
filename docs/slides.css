@@ -1,0 +1,333 @@
+@font-face {
+  font-family: Raleway;
+  src: url('https://www.bridging-it.de/_tech/fonts/raleway-4.woff2') format('woff2');
+  font-weight: 400;
+  font-display: swap;
+}
+:root {
+  color-scheme: light;
+  --ink: #333333;
+  --muted: #5a5a5a;
+  --red: #e10033;
+  --blue: #3379bb;
+  --line: #dedede;
+}
+body {
+  background: #fff;
+}
+.reveal {
+  font-family: Raleway, 'Helvetica Neue', Arial, sans-serif;
+  color: var(--ink);
+  font-size: 30px;
+}
+.reveal .slides {
+  text-align: left;
+}
+.reveal .slides section {
+  box-sizing: border-box;
+  padding: 25px 42px;
+}
+.reveal h1,
+.reveal h2 {
+  font-weight: 400;
+  letter-spacing: -0.035em;
+  line-height: 1.12;
+  margin: 20px 0 30px;
+}
+.reveal h1 {
+  font-size: 2.55em;
+}
+.reveal h2 {
+  font-size: 2.12em;
+}
+.reveal em {
+  font-style: normal;
+  color: var(--red);
+}
+.reveal p {
+  line-height: 1.45;
+}
+.eyebrow {
+  color: var(--muted);
+  font-size: 0.48em;
+  letter-spacing: 0.14em;
+  font-weight: 700;
+}
+.eyebrow::before {
+  content: '';
+  display: inline-block;
+  width: 42px;
+  height: 4px;
+  margin-right: 15px;
+  vertical-align: middle;
+  background: var(--red);
+}
+.lead {
+  color: var(--muted);
+  font-size: 1em;
+}
+.signature {
+  margin-top: 38px;
+  font-size: 0.65em;
+  color: var(--muted);
+}
+.duck {
+  margin-left: 20px;
+}
+.cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 22px;
+  margin-top: 30px;
+}
+.cards article {
+  background: #f5f5f5;
+  border-top: 3px solid var(--red);
+  padding: 22px;
+}
+.cards b {
+  font-size: 0.78em;
+  color: var(--ink);
+}
+.cards p {
+  font-size: 0.73em;
+  color: var(--muted);
+  margin-bottom: 0;
+}
+.takeaway {
+  font-size: 0.73em;
+  color: var(--muted);
+  margin-top: 30px;
+}
+.flow {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  margin: 35px 0;
+}
+.flow span {
+  background: #f5f5f5;
+  padding: 22px;
+  border-bottom: 3px solid var(--blue);
+  flex: 1;
+  text-align: center;
+  font-size: 0.8em;
+}
+.flow i {
+  color: var(--red);
+  font-style: normal;
+}
+.fine {
+  font-size: 0.54em;
+  color: var(--muted);
+  margin-top: 28px;
+}
+.reveal pre {
+  margin: 22px 0;
+  padding: 22px;
+  background: #f4f6f8;
+  border-left: 4px solid var(--blue);
+  font-size: 0.62em;
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+.reveal code {
+  font-family: ui-monospace, monospace;
+}
+.reveal pre code {
+  color: #254b70;
+}
+.reveal li {
+  margin: 14px 0;
+  font-size: 0.81em;
+  line-height: 1.45;
+}
+.score {
+  display: flex;
+  gap: 65px;
+  font-size: 0.66em;
+  color: var(--muted);
+  margin: 24px 0;
+}
+.score b {
+  margin-left: 12px;
+  color: #21754b;
+  font-size: 1.4em;
+}
+.score .bad b {
+  color: var(--red);
+}
+.questions p {
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 15px;
+  color: var(--muted);
+}
+.desktop-demo {
+  border: 1px solid #bac8d5;
+  margin-top: 30px;
+  box-shadow: 12px 12px 0 #eef3f8;
+}
+.browser-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 15px 22px;
+  background: #eef3f8;
+  color: #33526d;
+  font:
+    18px ui-monospace,
+    monospace;
+}
+.browser-bar > span:last-child {
+  margin-left: auto;
+  font-family: Raleway, Arial, sans-serif;
+}
+.live-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--red);
+}
+.desktop-content {
+  display: flex;
+  gap: 28px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 35px;
+  background: #3379bb;
+  color: #fff;
+}
+.desktop-content b {
+  font-size: 0.95em;
+}
+.desktop-content p {
+  font-size: 0.72em;
+  margin-bottom: 0;
+}
+.desktop-arrow {
+  font-size: 1.6em;
+}
+.reveal .controls {
+  color: var(--red);
+}
+.reveal .progress {
+  color: var(--red);
+  height: 4px;
+}
+.reveal .slide-number {
+  background: transparent;
+  color: var(--muted);
+  font:
+    15px Arial,
+    sans-serif;
+}
+#load-error {
+  position: fixed;
+  bottom: 1rem;
+  left: 1rem;
+  padding: 1rem;
+  background: #9c0023;
+  color: white;
+  font-family: Arial, sans-serif;
+}
+.intro-container .definition {
+  font-size: 0.77em;
+  color: var(--muted);
+}
+.timeline {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+  margin-top: 28px;
+}
+.timeline article {
+  border-top: 3px solid var(--red);
+  padding-top: 14px;
+}
+.timeline b {
+  color: var(--red);
+  font-size: 1em;
+}
+.timeline p {
+  color: var(--muted);
+  font-size: 0.62em;
+}
+.ecosystem {
+  display: flex;
+  gap: 22px;
+  margin-top: 24px;
+  font-size: 0.58em;
+}
+.ecosystem span {
+  background: #f5f5f5;
+  padding: 14px;
+  flex: 1;
+}
+.ecosystem b {
+  display: block;
+  color: var(--blue);
+  margin-bottom: 6px;
+}
+.source-links {
+  font-size: 0.38em;
+  color: var(--muted);
+  margin-top: 18px;
+}
+.source-links a {
+  color: var(--muted);
+  text-decoration: underline;
+}
+
+.vnc-container {
+  border: 1px solid var(--line);
+  padding: 18px;
+  background: #f5f7fa;
+}
+.vnc-label {
+  margin: 0 0 16px;
+  color: var(--muted);
+  font-size: 0.46em;
+  letter-spacing: 0.04em;
+}
+.vnc-path {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.vnc-path article {
+  flex: 1;
+}
+.vnc-path b {
+  color: var(--blue);
+  font-size: 0.64em;
+}
+.vnc-path p {
+  font-size: 0.52em;
+  margin: 10px 0 0;
+}
+.vnc-path > span {
+  color: var(--red);
+}
+.vnc-client {
+  text-align: center;
+}
+.vnc-connection {
+  display: block;
+  color: var(--blue);
+  font-size: 0.5em;
+  padding: 14px 0;
+}
+.vnc-client p {
+  background: #eef3f8;
+  padding: 16px;
+  margin: 0;
+  font-size: 0.6em;
+}
+.vnc-start {
+  font-size: 0.61em;
+  margin: 22px 0 0;
+}
+.vnc-overview .fine {
+  margin-top: 16px;
+  font-size: 0.48em;
+}

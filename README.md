@@ -39,22 +39,34 @@ Beide Ports melden die Weiterleitung, ohne automatisch einen Browser zu öffnen.
 Details und den optionalen Ansatz zum automatischen Öffnen beschreibt
 [Browser und Testausführung](docs/browser-und-testausfuehrung.md).
 
+## Duckazon ohne Tests starten
+
+Im Terminal des Dev Containers im Repository-Verzeichnis:
+
+```bash
+bun run dev
+```
+
+Anschließend http://localhost:5173 im eigenen Browser öffnen und den Shop manuell bedienen. Der Befehl startet den Vite-Entwicklungsserver, ohne Tests auszuführen. noVNC ist dafür nicht erforderlich. Falls nötig, Port 5173 in der VS-Code-Ports-Ansicht weiterleiten. Mit `Ctrl+C` den Server beenden.
+
+Die Abhängigkeiten installiert der Dev Container beim Einrichten automatisch. Falls sie fehlen, vorher `bun install` ausführen.
+
 ## VS Code Extensions / Plugins
 
 Die `.devcontainer/devcontainer.json` installiert im Container automatisch:
 
-| Extension | Zweck |
-|---|---|
-| `ms-playwright.playwright` | Tests ausführen, navigieren und debuggen |
-| `esbenp.prettier-vscode` | Autoformatierung beim Speichern |
-| `dbaeumer.vscode-eslint` | Linting und Fixes |
-| `openai.chatgpt` | Codex-Unterstützung |
-| `ReneSaarsoo.sql-formatter-vsc` | SQL-Formatierung |
-| `lumirelle.shell-format-rev` | Shell-/Dockerfile-Formatierung mit shfmt |
-| `bradlc.vscode-tailwindcss` | Tailwind-CSS-Unterstützung |
-| `ms-azuretools.vscode-containers` | Container-Werkzeuge |
+| Extension                         | Zweck                                    |
+| --------------------------------- | ---------------------------------------- |
+| `ms-playwright.playwright`        | Tests ausführen, navigieren und debuggen |
+| `esbenp.prettier-vscode`          | Autoformatierung beim Speichern          |
+| `dbaeumer.vscode-eslint`          | Linting und Fixes                        |
+| `openai.chatgpt`                  | Codex-Unterstützung                      |
+| `ReneSaarsoo.sql-formatter-vsc`   | SQL-Formatierung                         |
+| `lumirelle.shell-format-rev`      | Shell-/Dockerfile-Formatierung mit shfmt |
+| `bradlc.vscode-tailwindcss`       | Tailwind-CSS-Unterstützung               |
+| `ms-azuretools.vscode-containers` | Container-Werkzeuge                      |
 
-**Wichtig:** Die lokale Dev-Containers-Erweiterung muss *vor* dem Öffnen installiert sein; die anderen werden automatisch im Container installiert. Prettier ist der Standard-Formatter, `editor.formatOnSave=true` ist konfiguriert; SQL und Shell-/Dockerfile-Dateien verwenden die jeweils angegebenen Formatter. Zusätzlich: `bun run format`, `bun run format:check`, `bun run lint`, `bun run typecheck`.
+**Wichtig:** Die lokale Dev-Containers-Erweiterung muss _vor_ dem Öffnen installiert sein; die anderen werden automatisch im Container installiert. Prettier ist der Standard-Formatter, `editor.formatOnSave=true` ist konfiguriert; SQL und Shell-/Dockerfile-Dateien verwenden die jeweils angegebenen Formatter. Zusätzlich: `bun run format`, `bun run format:check`, `bun run lint`, `bun run typecheck`.
 
 ## Tests und Debugging
 
@@ -77,18 +89,6 @@ Das öffnet den **Playwright Inspector**; dort schrittweise durch den Test gehen
 Für **VS-Code-Breakpoints** in der Testdatei stattdessen die Playwright-Erweiterung verwenden: Im Bereich **Testing** unter den Playwright-Einstellungen die Umgebungsvariable `DEMO_BUG` auf `1` setzen, die Tests aktualisieren und beim Demo-Test **Debug Test** wählen. Einen Breakpoint bei `const total = ...` in `tests/03-debugging.spec.ts` setzen. Nach Ausführen der Zeile `total` im Debugger prüfen; mit F10 schrittweise weiterlaufen. VS Code pausiert den Testprozess, die Browserseite selbst kann weiter animieren. Die fehlerhafte Berechnung befindet sich in `src/App.tsx` bei `bug ? 0.6 : 0.5`. Für den Fix `0.6` auf `0.5` ändern; Vite aktualisiert die App. Dann den Test erneut starten. Anschließend die Umgebungsvariable für reguläre Testläufe wieder entfernen.
 
 **Wichtig:** Playwright Inspector (`--debug`) und VS-Code-Breakpoints sind zwei unterschiedliche Debugging-Mechanismen. Ein eigenes F5-Startprofil ist im Repository nicht enthalten.
-
-## 15-Minuten-Drehbuch
-
-| Zeit | Szene | Aktion |
-|---|---|---|
-| 0–3 min | Works on my machine | DevContainer, Bun, Browser + noVNC zeigen |
-| 3–6 min | Happy Duck | `bun run test:headed` ausführen |
-| 6–11 min | Broken Duck | Breakpoint im Demo-Test, **Debug Test**, noVNC beobachten, Rabatt-Bug finden und fixen |
-| 11–13 min | Cloud Duck | Vorab erfolgreich ausgeführten GitHub-Actions-Lauf und Report zeigen |
-| 13–15 min | Takeaways | Reproduzierbarkeit, Auto-Waiting, Debugger, Trace und Q&A |
-
-**Vor dem Vortrag:** Container starten, noVNC verbinden, Browser-Tabs öffnen, CI-Lauf vorbereiten, Test-Breakpoint setzen. Bug-Fix nach der Demo ggf. zurücksetzen (`git restore src/App.tsx`).
 
 ## CI: GitHub Actions
 
@@ -113,12 +113,10 @@ Die absichtlich fehlschlagende Datei `03-debugging.spec.ts` ist im Normalbetrieb
 
 ## Quellen
 
+Dieses Projekt und die Präsentation habe ich mit Unterstützung von ChatGPT (Codex) erstellt.
+
 - [VS Code Dev Containers](https://code.visualstudio.com/docs/devcontainers/tutorial)
 - [Dev Containers desktop-lite](https://github.com/devcontainers/features/tree/main/src/desktop-lite)
 - [Playwright Docker](https://playwright.dev/docs/docker)
 - [Playwright CI](https://playwright.dev/docs/ci)
 - [Bun](https://bun.sh/docs)
-
-## Lizenz / Hinweis
-
-Demo-/Schulungsprojekt ohne Zahlungssystem, Datenbank oder externe APIs. Keine echten Bestellungen. Frei als Ausgangspunkt für eigene Workshops nutzbar.

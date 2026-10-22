@@ -1,0 +1,353 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>E2E-Tests im Dev Container</title>
+    <meta
+      name="description"
+      content="Mein letzter Blocker für Dev Containers: E2E-Tests schreiben und debuggen. Zehn Minuten mit Playwright, noVNC und Duckazon."
+    />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.2.1/dist/reveal.css" />
+    <link rel="stylesheet" href="slides.css" />
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides">
+        <section>
+          <p class="eyebrow">ROUNDTABLE / 10 MINUTEN</p>
+          <h1>Alles im Devcontainer.<br /><em>Auch die E2E-Tests.</em></h1>
+          <p class="lead">
+            Entwicklertag #72<br />
+            Frontend Roundtable.
+          </p>
+          <p class="signature">
+            VS Code · Remote Container · Playwright · noVNC
+            <span class="duck" aria-hidden="true">🦆</span>
+          </p>
+          <aside class="notes">
+            0:00–0:20. Persönlich einsteigen: „Ich wollte vollständig in Dev Containers arbeiten.
+            E2E-Tests zu schreiben war für mich der Blocker. Ich brauche dabei einen sichtbaren
+            Browser und einen Debugger.“ Heute zeige ich den Weg dorthin an einem kleinen Demo-Shop.
+            Keine Installation während des Vortrags.
+          </aside>
+        </section>
+        <section class="intro-container">
+          <p class="eyebrow">01 / DEV CONTAINERS IN EINER MINUTE · 0:20–1:20</p>
+          <h2>Die Entwicklungsumgebung.<br /><em>Als Code im Repository.</em></h2>
+          <p class="definition">
+            Ein Container mit Laufzeit, Werkzeugen und Abhängigkeiten.<br /><code
+              >devcontainer.json</code
+            >
+            beschreibt Einrichtung und Editor-Anbindung.
+          </p>
+          <div class="timeline">
+            <article>
+              <b>2019</b>
+              <p>VS Code startet<br />Remote-Containers als Preview.</p>
+            </article>
+            <article>
+              <b>2021</b>
+              <p>GitHub Codespaces:<br />GA für Team &amp; Enterprise.</p>
+            </article>
+            <article>
+              <b>2022</b>
+              <p>Offene Dev-Container-<br />Spezifikation + CLI.</p>
+            </article>
+            <article>
+              <b>Heute</b>
+              <p>Lokal, Cloud-Workspaces<br />und Agent-Umgebungen.</p>
+            </article>
+          </div>
+          <div class="ecosystem">
+            <span><b>Editoren</b> VS Code · IntelliJ IDEA</span>
+            <span><b>Cloud</b> GitHub Codespaces</span>
+            <span><b>CodeSandbox</b> Dev-Container-Support</span>
+            <span><b>Ona</b> Cloud + Agenten</span>
+          </div>
+          <p class="fine">
+            Ein offenes Format – unterstützt von verschiedenen Editoren und Cloud-Plattformen.
+          </p>
+          <p class="source-links">
+            Quellen:
+            <a href="https://code.visualstudio.com/blogs/2019/05/02/remote-development"
+              >VS Code 2019</a
+            >
+            ·
+            <a
+              href="https://github.blog/changelog/2021-08-11-codespaces-is-generally-available-for-team-and-enterprise/"
+              >Codespaces 2021</a
+            >
+            ·
+            <a href="https://code.visualstudio.com/blogs/2022/05/18/dev-container-cli"
+              >Spezifikation 2022</a
+            >
+            · <a href="https://ona.com/docs/ona/agents/overview">Ona heute</a> ·
+            <a
+              href="https://codesandbox.stream/blog/introducing-dev-container-support-in-codesandbox"
+              >CodeSandbox</a
+            >
+            ·
+            <a href="https://www.jetbrains.com/help/idea/connect-to-devcontainer.html"
+              >IntelliJ IDEA</a
+            >
+          </p>
+          <aside class="notes">
+            0:20–1:20. „Statt mein Notebook einzurichten, beschreibe ich die Entwicklungsumgebung im
+            Repository. Der Editor verbindet sich mit dem Container; Compiler, Tools und Tests
+            laufen darin.“ devcontainer.json kann Image oder Dockerfile, Features, Erweiterungen,
+            Ports und Setup-Befehle konfigurieren. Historie bewusst auf dieses Ökosystem begrenzen:
+            Container gab es schon vorher. 2019 startet die VS-Code-Preview, 2021 wird Codespaces
+            für Team und Enterprise allgemein verfügbar, 2022 folgen offene Spezifikation und CLI.
+            Heute gibt es Unterstützung lokal und bei Cloud-Anbietern: Codespaces betreibt den Dev
+            Container auf einer VM; Ona nutzt Dev-Container-Konfigurationen auch für isolierte
+            Agent-Umgebungen. Das zeigt die Breite des Ökosystems, keine gemessene Marktverbreitung.
+            Auch IntelliJ IDEA unterstützt Dev Containers; CodeSandbox hat die Unterstützung im
+            Oktober 2023 angekündigt. CodeSandbox verwendet außerdem eigene Projektdateien im Ordner
+            .codesandbox, etwa tasks.json für Start- und Setup-Befehle. Das ist von der
+            standardisierten .devcontainer/devcontainer.json zu unterscheiden. Die Anbieter können
+            unterschiedliche Teile der Spezifikation unterstützen. Überleitung: „Mein letzter
+            Blocker waren die E2E-Tests.“
+          </aside>
+        </section>
+        <section>
+          <p class="eyebrow">02 / MEIN BLOCKER · 1:20–1:50</p>
+          <h2>Tests ausführen? Ja.<br /><em>Tests schreiben?</em></h2>
+          <p class="lead">
+            E2E-Tests zu schreiben war für mich die Hürde,<br />komplett im Dev Container zu
+            arbeiten.
+          </p>
+          <div class="cards">
+            <article>
+              <b>Sehen</b>
+              <p>Was macht der Browser nach meinem Klick?</p>
+            </article>
+            <article>
+              <b>Anhalten</b>
+              <p>Wo weicht der Test vom erwarteten Ablauf ab?</p>
+            </article>
+            <article>
+              <b>Verstehen</b>
+              <p>Welche Werte sehe ich am Breakpoint?</p>
+            </article>
+          </div>
+          <aside class="notes">
+            1:20–1:50. Als persönliche Erfahrung formulieren, nicht als generelle Einschränkung von
+            Dev Containers. Headless ausführen allein reicht mir beim Entwickeln der Tests nicht.
+            Die Frage war: Wie bekomme ich Browser und Debugger in meinen Container-Workflow?
+          </aside>
+        </section>
+        <section class="vnc-overview">
+          <p class="eyebrow">03 / DER AHA-MOMENT · 1:50–2:40</p>
+          <h2>Wie kommt der Container-Desktop<br /><em>in meinen Browser?</em></h2>
+          <div class="vnc-container">
+            <p class="vnc-label">
+              IM DEV CONTAINER · desktop-lite 1.2.10 (Lockdatei) · Fluxbox + TigerVNC + noVNC
+            </p>
+            <div class="vnc-path">
+              <article>
+                <b>Chromium</b>
+                <p>Playwright startet ihn<br />mit <code>--headed</code>.</p>
+              </article>
+              <span aria-hidden="true">→</span>
+              <article>
+                <b>Virtueller Desktop</b>
+                <p><code>DISPLAY=:1</code> verbindet<br />die App mit der Anzeige.</p>
+              </article>
+              <span aria-hidden="true">→</span>
+              <article>
+                <b>TigerVNC</b>
+                <p>Port 5901, intern:<br />liefert Bildänderungen.</p>
+              </article>
+              <span aria-hidden="true">→</span>
+              <article>
+                <b>websockify</b>
+                <p>Port 6080:<br />VNC ↔ WebSocket.</p>
+              </article>
+            </div>
+          </div>
+          <div class="vnc-client">
+            <span class="vnc-connection"
+              >⇅ WebSocket über VS Code Port Forwarding · <b>6080</b></span
+            >
+            <p>
+              <b>Lokaler Browser: noVNC</b> zeichnet den Desktop und sendet Maus + Tastatur zurück.
+            </p>
+          </div>
+          <p class="vnc-start">
+            <b>Live:</b> <code>localhost:6080/vnc.html</code> → Connect → Passwort
+            <code>vscode</code>
+          </p>
+          <p class="fine">
+            5173 = Shop · 6080 = Desktop-Zugang · Playwright steuert Chromium direkt; VS Code
+            debuggt den Testprozess.
+          </p>
+          <p class="source-links">
+            Quellen:
+            <a href="https://github.com/devcontainers/features/tree/main/src/desktop-lite"
+              >desktop-lite</a
+            >
+            · <a href="https://novnc.com/info.html">noVNC</a>
+          </p>
+          <aside class="notes">
+            1:50–2:40. Den Bildweg von links nach rechts erklären: Playwright startet Chromium im
+            Container mit --headed. DISPLAY ist hier :1 und verweist auf die virtuelle X-Anzeige;
+            Fluxbox verwaltet die Fenster. TigerVNC stellt den Desktop über das VNC-Protokoll
+            bereit. websockify überbrückt TCP zum VNC-Server und WebSocket zum Browser. VS Code
+            leitet Port 6080 lokal weiter. Die dort geladene noVNC-Webanwendung zeichnet die
+            Bildänderungen im Canvas. Maus- und Tastaturereignisse gehen in Gegenrichtung zum
+            Desktop zurück. desktop-lite richtet diese Komponenten ein und startet sie automatisch.
+            Der interne VNC-Port ist standardmäßig 5901; für diesen Browserzugang genügt die
+            Weiterleitung von 6080. Port 5173 liefert dagegen die Shop-Webseite. Der lokale
+            noVNC-Tab zeigt den entfernten Desktop; der eigentliche Testbrowser läuft im Container.
+            Playwrights Automatisierung und der VS-Code-Debugger haben eigene Verbindungen und
+            laufen nicht über VNC. Jetzt kurz zum vorbereiteten noVNC-Tab wechseln und den Desktop
+            bedienen. Ein Browserfenster erscheint nach dem Start eines headed Tests.
+          </aside>
+        </section>
+        <section>
+          <p class="eyebrow">04 / DER TEST · 2:40–3:30</p>
+          <h2>Ein Einkauf.<br /><em>Eine klare Erwartung.</em></h2>
+          <pre><code>await page.goto('/');
+await page.getByRole('button', {
+  name: 'Senior Debug Duck hinzufügen'
+}).click();
+await page.getByLabel('Rabattcode').fill('QUACK50');
+await page.getByRole('button', { name: 'Einlösen' }).click();
+await expect(page.getByTestId('total'))
+  .toHaveText('15,00 €');</code></pre>
+          <p class="takeaway">
+            Rollen und Labels als Locators. Eine Assertion, die auf das Ergebnis wartet.
+          </p>
+          <aside class="notes">
+            2:40–3:30. Echter Code aus tests/02-discount.spec.ts. Die Ente kostet 29,99 €, mit 50
+            Prozent Rabatt und Rundung bleiben 15,00 €. Die Rollen und Labels beschreiben die
+            Interaktion. Die abschließende Playwright-Assertion prüft wiederholt bis zum erwarteten
+            Wert oder Timeout. Keine feste Wartezeit nötig.
+          </aside>
+        </section>
+        <section>
+          <p class="eyebrow">05 / LIVE-DEMO · 3:30–6:30</p>
+          <h2>Breakpoint setzen.<br /><em>Den Fehler verstehen.</em></h2>
+          <ol>
+            <li>Neben <code>const total</code> klicken → Breakpoint setzen.</li>
+            <li><strong>Debug Test</strong> starten → Checkout in noVNC zeigen.</li>
+            <li>Mit <strong>F10</strong> weitergehen → <code>total</code> inspizieren.</li>
+          </ol>
+          <div class="score">
+            <span>Erwartet <b>15,00 €</b></span
+            ><span class="bad">Mit Bug <b>17,99 €</b></span>
+          </div>
+          <pre><code>// tests/03-debugging.spec.ts — hier den Breakpoint setzen:
+const total = await page.getByTestId('total').innerText();
+expect(total).toBe('15,00 €');</code></pre>
+          <aside class="notes">
+            3:30–4:00. Den normalen Rabatt-Test sichtbar ausführen: bun run test:headed
+            tests/02-discount.spec.ts. Im noVNC-Tab den Browser beim Einkauf beobachten. 4:00–4:30.
+            tests/03-debugging.spec.ts öffnen und LIVE links neben der Zeilennummer von const total
+            einen Breakpoint setzen. Roter Punkt! DEMO_BUG=1 ist bereits in den
+            Umgebungseinstellungen der Playwright-Erweiterung gesetzt, die Testliste aktualisiert.
+            Über das Testmenü oder die Testing-Ansicht Debug Test wählen. 4:30–5:30. VS Code
+            pausiert VOR der Zuweisung. Kurz den Checkout im noVNC-Tab zeigen, dann zurück zum
+            markierten Code. Der Testprozess pausiert; die Webseite selbst kann weiterlaufen. F10 /
+            Step Over drücken. total per Hover oder Watch ansehen: 17,99 €. F5 / Continue führt zur
+            fehlschlagenden Assertion. 5:30–6:30. In src/App.tsx bug ? 0.6 : 0.5 zu bug ? 0.5 : 0.5
+            ändern. Breakpoint entfernen, Demo-Test erneut ausführen: grün. Bei Zeitdruck den Fix
+            nur erklären; Breakpoint und Variableninspektion haben Vorrang. Um 6:30 zurück zu den
+            Folien. DEMO_BUG=1 nimmt die Testdatei auf, ?bug=discount aktiviert den App-Bug. Debug
+            Test verwendet den VS-Code-Debugger. --debug öffnet den Playwright Inspector.
+          </aside>
+        </section>
+        <section>
+          <p class="eyebrow">06 / VOM DESKTOP IN DIE CI · 6:30–7:30</p>
+          <h2>Lokal sichtbar.<br /><em>In der CI headless.</em></h2>
+          <div class="flow">
+            <span>Push / PR</span><i>→</i><span>Prüfungen +<br />Playwright</span><i>→</i
+            ><span>HTML-Report +<br />Fehler-Traces</span>
+          </div>
+          <ul>
+            <li>Derselbe Testcode, dieselbe OS-Familie: Debian Bookworm.</li>
+            <li>Bei Fehlern: Trace und Screenshot zur Analyse.</li>
+            <li>Reports und Testergebnisse: sieben Tage als CI-Artefakte.</li>
+          </ul>
+          <p class="fine">
+            Dev Container und CI verwenden unterschiedliche Images. Der Demo-Bug-Test ist
+            standardmäßig ausgeschlossen.
+          </p>
+          <aside class="notes">
+            6:30–7:30. Einen vorbereiteten GitHub-Actions-Lauf samt Report zeigen. Nicht auf einen
+            neuen Lauf warten. CI verwendet node:22-bookworm und baut nicht das
+            DevContainer-Dockerfile. Der Workflow lädt Artefakte mit if: always() hoch; Traces und
+            Screenshots entstehen bei Fehlern. Falls kein fertiger Lauf vorliegt, die
+            Workflow-Konfiguration zeigen und ausdrücklich als Konfiguration benennen.
+          </aside>
+        </section>
+        <section>
+          <p class="eyebrow">07 / WAS ICH MITNEHME · 7:30–8:30</p>
+          <h2>Mein fehlendes Stück:<br /><em>sichtbares Feedback.</em></h2>
+          <div class="cards">
+            <article>
+              <b>Dev Container</b>
+              <p>Werkzeuge und Abhängigkeiten im Repository beschreiben.</p>
+            </article>
+            <article>
+              <b>noVNC</b>
+              <p>Den Testbrowser im Container sehen und bedienen.</p>
+            </article>
+            <article>
+              <b>Debugger</b>
+              <p>Test anhalten, Variablen prüfen, gezielt weitergehen.</p>
+            </article>
+          </div>
+          <p class="takeaway">
+            So wird aus „Tests laufen im Container“ ein Workflow zum Testschreiben.
+          </p>
+          <aside class="notes">
+            7:30–8:30. Den Bogen zum eigenen Blocker schließen: Entscheidend ist für mich die
+            Kombination aus sichtbarem Browser und Test-Debugger. noVNC zeigt den Desktop, VS Code
+            hält den Testprozess an. Der Shop ist eine reine Frontend-Demo ohne Datenbank oder
+            Zahlungssystem. Das Muster lässt sich übertragen, das Beispiel ersetzt keine
+            vollständige Produktions-Teststrategie.
+          </aside>
+        </section>
+        <section>
+          <p class="eyebrow">08 / AUSTAUSCH · 8:30–10:00</p>
+          <h2>Was hält euch noch<br /><em>außerhalb des Containers?</em></h2>
+          <div class="questions">
+            <p>Browser und UI-Tests?</p>
+            <p>Debugging und Feedback?</p>
+            <p>Ein anderes Werkzeug im Alltag?</p>
+          </div>
+          <p class="signature">Welchen Ablauf würdet ihr als Erstes damit testen?</p>
+          <aside class="notes">
+            8:30–10:00. Ein bis zwei kurze Antworten zulassen. Den eigenen E2E-Blocker als Einladung
+            zum Erfahrungsaustausch verwenden. Bei Hosting-Fragen: Die Folien sind statisch und
+            können auf GitHub Pages liegen. Desktop und noVNC laufen im Dev Container. In CI läuft
+            Playwright headless ohne Desktop. Nach zehn Minuten enden.
+          </aside>
+        </section>
+      </div>
+    </div>
+    <div id="load-error" hidden>
+      Die Folien konnten nicht geladen werden. Bitte Internetverbindung prüfen und neu laden.
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.2.1/dist/reveal.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.2.1/plugin/notes/notes.js"></script>
+    <script>
+      if (typeof Reveal === 'undefined') {
+        document.getElementById('load-error').hidden = false;
+      } else {
+        Reveal.initialize({
+          hash: true,
+          slideNumber: 'c/t',
+          transition: 'fade',
+          width: 1280,
+          height: 720,
+          margin: 0.06,
+          totalTime: 600,
+          plugins: typeof RevealNotes === 'undefined' ? [] : [RevealNotes],
+        });
+      }
+    </script>
+  </body>
+</html>

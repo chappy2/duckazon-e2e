@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite --host 0.0.0.0",
+    "slides": "vite docs --host 0.0.0.0 --port 8000 --strictPort",
     "build": "tsc -b && vite build",
     "test:e2e": "playwright test",
     "test:headed": "playwright test --headed --workers=1",
